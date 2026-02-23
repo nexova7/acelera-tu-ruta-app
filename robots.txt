@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://acelera-tu-ruta-app.vercel.app/sitemap.xml
