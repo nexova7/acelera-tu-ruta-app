@@ -601,6 +601,43 @@
       );
     };
 
+    const ShareButton = ({ item }) => {
+      const [copied, setCopied] = useState(false);
+
+      const handleShare = (e) => {
+        e.stopPropagation();
+        const shareText = `🛍️ ${item.name}\n💰 $${item.price ? item.price.toLocaleString() : ''}\n📦 REF: ${item.ref}\n\n${item.desc}\n\n✅ Disponible en Acelera Tu Ruta – Bogotá y Soacha`;
+        const shareUrl = window.location.href;
+
+        if (navigator.share) {
+          navigator.share({
+            title: item.name,
+            text: shareText,
+            url: shareUrl,
+          }).catch(() => { });
+        } else {
+          navigator.clipboard.writeText(`${shareText}\n🔗 ${shareUrl}`).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          }).catch(() => { });
+        }
+      };
+
+      return (
+        <button
+          id={`share-btn-${item.id}`}
+          onClick={handleShare}
+          className={`w-full py-2 text-[10px] font-bold uppercase tracking-widest rounded transition-all duration-300 flex items-center justify-center gap-1 border ${copied
+              ? 'bg-neon-magenta/20 border-neon-magenta text-neon-magenta shadow-[0_0_10px_rgba(255,0,255,0.4)]'
+              : 'bg-white/5 border-neon-magenta/30 text-neon-magenta hover:bg-neon-magenta hover:text-white hover:shadow-[0_0_10px_rgba(255,0,255,0.5)]'
+            }`}
+        >
+          <span>{copied ? '✅' : '📤'}</span>
+          {copied ? '¡COPIADO!' : 'COMPARTIR'}
+        </button>
+      );
+    };
+
     const Store = () => {
       const [activeCategory, setActiveCategory] = useState({ parent: "Todos", sub: null });
       const [selectedProduct, setSelectedProduct] = useState(null);
@@ -774,7 +811,8 @@
                       <h4 className="text-sm md:text-xl font-black text-white uppercase leading-tight mb-2 group-hover:text-neon-cyan transition-colors line-clamp-2">{item.name}</h4>
                       {item.price && <div className="text-lg md:text-2xl font-bold text-neon-magenta mb-3 drop-shadow-[0_0_5px_#FF00FF]">${item.price.toLocaleString()}</div>}
                       <p className="text-gray-400 text-[10px] md:text-xs line-clamp-2 mb-4 font-light hidden md:block">{item.desc}</p>
-                      <button className="w-full py-2 bg-white/5 hover:bg-neon-cyan hover:text-black text-neon-cyan text-[10px] font-bold uppercase tracking-widest rounded transition-all border border-neon-cyan/30 hover:border-neon-cyan">VER DETALLES</button>
+                      <button className="w-full py-2 bg-white/5 hover:bg-neon-cyan hover:text-black text-neon-cyan text-[10px] font-bold uppercase tracking-widest rounded transition-all border border-neon-cyan/30 hover:border-neon-cyan mb-2">VER DETALLES</button>
+                      <ShareButton item={item} />
                     </div>
                   </div>
                 ))}
